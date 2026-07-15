@@ -1357,9 +1357,31 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
-(() => {
-  const STORAGE_KEY = "kinedia_work_orders_v3";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    doc,
+    setDoc,
+    deleteDoc,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBHHAC7x3CzbLmsgQoDleYYncBYmnncXSo",
+    authDomain: "kinedia-d51bf.firebaseapp.com",
+    projectId: "kinedia-d51bf",
+    storageBucket: "kinedia-d51bf.firebasestorage.app",
+    messagingSenderId: "550321790751",
+    appId: "1:550321790751:web:3fa86bfd114897486bda2a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const recordsCollection = collection(db, "fichas");
+  const LEGACY_STORAGE_KEY = "kinedia_work_orders_v3";
+
   const $ = s => document.querySelector(s);
   const form = $("#recordForm");
   const list = $("#recordList");
@@ -1376,7 +1398,8 @@
   const filtersPanel = $("#filtersPanel");
   const filtersAccordionBtn = $("#filtersAccordionBtn");
   const filtersAccordionMeta = $("#filtersAccordionMeta");
-  let records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  let records = [];
+  let firestoreReady = false;
   let selectedCorrections = [];
 
   const fields = {
@@ -1412,8 +1435,66 @@
     $("#dateCorner").textContent = `${d}/${m}/${y}`;
   }
 
-  function saveStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  async function saveRecordToFirestore(record) {
+    await setDoc(doc(db, "fichas", record.id), record);
+  }
+
+  async function deleteRecordFromFirestore(id) {
+    await deleteDoc(doc(db, "fichas", id));
+  }
+
+  async function migrateLegacyRecords() {
+    const migrationKey = `${LEGACY_STORAGE_KEY}_migrated_to_firestore`;
+
+    if (localStorage.getItem(migrationKey) === "true") return;
+
+    let legacyRecords = [];
+
+    try {
+      legacyRecords = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || "[]");
+    } catch (error) {
+      console.warn("No se pudieron leer las fichas anteriores:", error);
+    }
+
+    if (!Array.isArray(legacyRecords) || !legacyRecords.length) {
+      localStorage.setItem(migrationKey, "true");
+      return;
+    }
+
+    await Promise.all(
+      legacyRecords
+        .filter(record => record && record.id)
+        .map(record =>
+          setDoc(doc(db, "fichas", record.id), {
+            ...record,
+            updatedAt: record.updatedAt || new Date().toISOString()
+          })
+        )
+    );
+
+    localStorage.setItem(migrationKey, "true");
+    showToast("Fichas anteriores migradas a Firebase");
+  }
+
+  function listenToFirestore() {
+    return onSnapshot(
+      recordsCollection,
+      snapshot => {
+        records = snapshot.docs.map(snapshotDoc => ({
+          id: snapshotDoc.id,
+          ...snapshotDoc.data()
+        }));
+
+        firestoreReady = true;
+        renderRecords();
+      },
+      error => {
+        console.error("Error al leer Firestore:", error);
+        firestoreReady = false;
+        showToast("No se pudo conectar con la base de datos", true);
+        renderRecords();
+      }
+    );
   }
 
   function showToast(message, danger=false) {
@@ -1912,7 +1993,9 @@
         return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
       });
 
-    $("#recordCount").textContent = `${records.length} ${records.length === 1 ? "registro" : "registros"}`;
+    $("#recordCount").textContent = firestoreReady
+      ? `${records.length} ${records.length === 1 ? "registro" : "registros"} · Firebase`
+      : "Conectando con Firebase...";
     filteredCount.textContent = `${filtered.length} ${filtered.length === 1 ? "resultado" : "resultados"}`;
     updateFiltersAccordionMeta();
 
@@ -1981,22 +2064,27 @@
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
-  form.addEventListener("submit", e => {
+  form.addEventListener("submit", async e => {
     e.preventDefault();
+
     const record = recordFromForm();
-    const idx = records.findIndex(r => r.id === record.id);
+    const alreadyExists = records.some(item => item.id === record.id);
+    const submitButton = form.querySelector('button[type="submit"]');
 
-    if (idx >= 0) {
-      records[idx] = record;
-      showToast("Ficha actualizada");
-    } else {
-      records.push(record);
-      showToast("Ficha guardada");
+    submitButton.disabled = true;
+    submitButton.textContent = alreadyExists ? "Actualizando..." : "Guardando...";
+
+    try {
+      await saveRecordToFirestore(record);
+      showToast(alreadyExists ? "Ficha actualizada" : "Ficha guardada");
+      resetForm();
+    } catch (error) {
+      console.error("Error al guardar la ficha:", error);
+      showToast("No se pudo guardar la ficha", true);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Guardar ficha";
     }
-
-    saveStorage();
-    renderRecords();
-    resetForm();
   });
 
   function loadRecordIntoForm(id) {
@@ -2042,8 +2130,9 @@
   }
 
 
-  function deleteSavedRecord(id) {
+  async function deleteSavedRecord(id) {
     const record = records.find(item => item.id === id);
+
     if (!record) {
       showToast("No se encontró la ficha", true);
       return;
@@ -2051,17 +2140,21 @@
 
     const patientName = record.patient || "este paciente";
     const confirmed = window.confirm(`¿Eliminar la ficha de ${patientName}?`);
+
     if (!confirmed) return;
 
-    records = records.filter(item => item.id !== id);
-    saveStorage();
+    try {
+      await deleteRecordFromFirestore(id);
 
-    if (fields.id.value === id) {
-      resetForm();
+      if (fields.id.value === id) {
+        resetForm();
+      }
+
+      showToast("Ficha eliminada", true);
+    } catch (error) {
+      console.error("Error al eliminar la ficha:", error);
+      showToast("No se pudo eliminar la ficha", true);
     }
-
-    renderRecords();
-    showToast("Ficha eliminada", true);
   }
 
   list.addEventListener("click", e => {
@@ -2135,20 +2228,27 @@ $("#printBtn").addEventListener("click", () => window.print());
     }, 500);
   });
 
-  $("#deleteCurrentBtn").addEventListener("click", () => {
+  $("#deleteCurrentBtn").addEventListener("click", async () => {
     const currentId = fields.id.value;
 
     if (currentId) {
-      const currentRecord = records.find(r => r.id === currentId);
-      const patientName = currentRecord?.patient || fields.patient.value.trim() || "esta ficha";
+      const currentRecord = records.find(record => record.id === currentId);
+      const patientName =
+        currentRecord?.patient ||
+        fields.patient.value.trim() ||
+        "esta ficha";
 
       if (!confirm(`¿Borrar la ficha de ${patientName}?`)) return;
 
-      records = records.filter(r => r.id !== currentId);
-      saveStorage();
-      renderRecords();
-      resetForm();
-      showToast("Ficha eliminada", true);
+      try {
+        await deleteRecordFromFirestore(currentId);
+        resetForm();
+        showToast("Ficha eliminada", true);
+      } catch (error) {
+        console.error("Error al eliminar la ficha:", error);
+        showToast("No se pudo eliminar la ficha", true);
+      }
+
       return;
     }
 
@@ -2194,7 +2294,12 @@ $("#printBtn").addEventListener("click", () => window.print());
 
   resetForm();
   renderRecords();
-})();
+  listenToFirestore();
+
+  migrateLegacyRecords().catch(error => {
+    console.error("Error al migrar las fichas anteriores:", error);
+    showToast("No se pudieron migrar algunas fichas anteriores", true);
+  });
 </script>
 </body>
 </html>
