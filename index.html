@@ -2500,21 +2500,45 @@
   }
 
   async function printCurrentSheet() {
-    const printWindow = window.open("", "_blank");
+    const canvas = await captureCurrentSheet();
+    const imageData = canvas.toDataURL("image/png");
 
-    if (!printWindow) {
-      throw new Error("El navegador bloqueó la ventana de impresión.");
-    }
+    const printFrame = document.createElement("iframe");
+    printFrame.setAttribute("aria-hidden", "true");
+    printFrame.style.position = "fixed";
+    printFrame.style.right = "0";
+    printFrame.style.bottom = "0";
+    printFrame.style.width = "0";
+    printFrame.style.height = "0";
+    printFrame.style.border = "0";
+    printFrame.style.visibility = "hidden";
 
-    printWindow.document.write(`
+    document.body.appendChild(printFrame);
+
+    const frameWindow = printFrame.contentWindow;
+    const frameDocument = printFrame.contentDocument || frameWindow.document;
+
+    const removeFrame = () => {
+      setTimeout(() => {
+        printFrame.remove();
+      }, 250);
+    };
+
+    frameDocument.open();
+    frameDocument.write(`
       <!DOCTYPE html>
       <html lang="es">
       <head>
         <meta charset="UTF-8">
-        <title>Preparando impresión...</title>
+        <title>Kinedia - ${escapeHTML(fields.patient.value.trim() || "ficha")}</title>
         <style>
-          @page{size:A4 portrait;margin:0}
-          html,body{
+          @page{
+            size:A4 portrait;
+            margin:0;
+          }
+
+          html,
+          body{
             width:210mm;
             height:297mm;
             margin:0;
@@ -2522,11 +2546,13 @@
             background:#fff;
             overflow:hidden;
           }
+
           body{
             display:flex;
             align-items:flex-start;
             justify-content:flex-start;
           }
+
           img{
             display:block;
             width:210mm;
@@ -2536,31 +2562,40 @@
           }
         </style>
       </head>
-      <body></body>
+      <body>
+        <img id="printImage" src="${imageData}" alt="Ficha Kinedia">
+      </body>
       </html>
     `);
-    printWindow.document.close();
+    frameDocument.close();
 
-    try {
-      const canvas = await captureCurrentSheet();
-      const image = printWindow.document.createElement("img");
+    const printImage = frameDocument.getElementById("printImage");
 
-      image.alt = "Ficha Kinedia";
-      image.src = canvas.toDataURL("image/png");
+    await new Promise((resolve, reject) => {
+      if (printImage.complete) {
+        resolve();
+        return;
+      }
 
-      image.onload = () => {
-        printWindow.document.body.replaceChildren(image);
-        printWindow.document.title = `Kinedia - ${fields.patient.value.trim() || "ficha"}`;
+      printImage.addEventListener("load", resolve, { once:true });
+      printImage.addEventListener(
+        "error",
+        () => reject(new Error("No se pudo preparar la ficha para imprimir.")),
+        { once:true }
+      );
+    });
 
-        setTimeout(() => {
-          printWindow.focus();
-          printWindow.print();
-        }, 180);
-      };
-    } catch (error) {
-      printWindow.close();
-      throw error;
-    }
+    frameWindow.addEventListener("afterprint", removeFrame, { once:true });
+
+    setTimeout(() => {
+      try {
+        frameWindow.focus();
+        frameWindow.print();
+      } catch (error) {
+        removeFrame();
+        throw error;
+      }
+    }, 100);
   }
 
   async function exportSavedRecord(id, format) {
