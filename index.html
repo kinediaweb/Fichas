@@ -735,141 +735,190 @@
     .record-list{
       display:flex;
       flex-direction:column;
-      gap:5px;
+      gap:7px;
+      width:100%;
       max-height:none;
-      overflow:auto;
+      overflow:visible;
       margin-top:10px;
     }
 
     .record{
       display:grid;
-      grid-template-columns:minmax(180px,1.2fr) minmax(250px,2fr) auto;
+      grid-template-columns:minmax(0, 1fr) auto;
       align-items:center;
-      gap:12px;
+      gap:14px;
+      width:100%;
+      min-width:0;
+      padding:10px 11px;
       border:1px solid var(--line);
-      border-radius:10px;
-      padding:7px 9px;
+      border-radius:11px;
       background:#fff;
-      min-height:46px;
+      box-shadow:0 2px 8px rgba(0,0,0,.025);
+      overflow:hidden;
+    }
+
+    .record-summary{
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      min-width:0;
     }
 
     .record-title{
-      font-size:13px;
-      font-weight:700;
       margin:0;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-size:14px;
+      font-weight:750;
       line-height:1.25;
+      color:var(--ink);
     }
 
-    .record-meta{
-      font-size:11px;
+    .record-primary-meta{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:6px 16px;
+      min-width:0;
       color:var(--muted);
+      font-size:11px;
       line-height:1.35;
-      white-space:normal;
+    }
+
+    .record-primary-meta strong{
+      color:#4b5054;
+      font-weight:700;
+    }
+
+    .record-corrections{
+      min-width:0;
+      color:#4b5155;
+      font-size:11px;
+      line-height:1.4;
+      overflow-wrap:anywhere;
     }
 
     .record-actions{
-      margin:0;
-      display:flex;
+      display:grid;
+      grid-template-columns:repeat(3, auto);
       align-items:center;
-      justify-content:flex-end;
+      justify-content:end;
       gap:4px;
-      flex-wrap:nowrap;
-    }
-
-
-    .record-actions .btn-icon{
-      flex:0 0 28px;
-      width:28px;
-      height:28px;
+      min-width:max-content;
+      margin:0;
     }
 
     .record-actions .btn-small{
+      min-width:0;
       padding:5px 7px;
       font-size:10px;
       white-space:nowrap;
     }
 
-
-
+    .record-actions .btn-icon{
+      width:28px;
+      height:28px;
+      padding:0;
+    }
 
     .saved-tools{
       display:grid;
-      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-      gap:10px;
+      grid-template-columns:minmax(0, 1fr) 42px;
       align-items:start;
       width:100%;
       margin-bottom:10px;
     }
 
     .saved-search-wrap{
+      grid-column:1;
       width:100%;
       min-width:0;
+    }
+
+    .saved-search-wrap .search{
+      height:42px;
+      min-height:42px;
+      border-radius:10px 0 0 10px;
+      border-right:0;
     }
 
     .filters-panel{
-      margin-top:0;
-      border:1px solid var(--line);
-      border-radius:10px;
-      background:#fff;
-      overflow:hidden;
-      width:100%;
-      min-width:0;
+      display:contents;
     }
 
     .filters-accordion-btn{
-      width:100%;
-      min-height:41px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border:0;
+      grid-column:2;
+      width:42px;
+      height:42px;
+      min-height:42px;
+      display:grid;
+      place-items:center;
+      border:1px solid var(--line);
+      border-radius:0 10px 10px 0;
       background:#fff;
-      color:var(--ink);
-      padding:11px 12px;
-      font-size:12px;
-      font-weight:700;
+      color:#111;
+      padding:0;
       cursor:pointer;
-      text-align:left;
+      position:relative;
     }
 
     .filters-accordion-btn:hover{
-      background:#f8f8f8;
+      background:#f7f7f7;
     }
 
-    .filters-accordion-left{
-      display:flex;
-      align-items:center;
-      gap:8px;
+    .filter-funnel{
+      position:relative;
+      display:block;
+      width:17px;
+      height:16px;
+    }
+
+    .filter-funnel::before{
+      content:"";
+      position:absolute;
+      left:1px;
+      top:1px;
+      width:15px;
+      height:9px;
+      background:#111;
+      clip-path:polygon(0 0,100% 0,62% 100%,38% 100%);
+    }
+
+    .filter-funnel::after{
+      content:"";
+      position:absolute;
+      left:6px;
+      top:9px;
+      width:5px;
+      height:6px;
+      background:#111;
+      border-radius:0 0 1px 1px;
+    }
+
+    .filters-accordion-left,
+    .filters-accordion-arrow{
+      display:none;
     }
 
     .filters-accordion-meta{
-      font-size:11px;
-      color:var(--muted);
-      font-weight:500;
-    }
-
-    .filters-accordion-arrow{
-      width:9px;
-      height:9px;
-      border-right:1.5px solid currentColor;
-      border-bottom:1.5px solid currentColor;
-      transform:rotate(45deg);
-      transition:.18s ease;
-      color:var(--muted);
-      flex:0 0 auto;
-      margin-right:2px;
-    }
-
-    .filters-panel.open .filters-accordion-arrow{
-      transform:rotate(225deg);
-      margin-top:4px;
+      position:absolute;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      clip:rect(0 0 0 0);
+      white-space:nowrap;
     }
 
     .filters-content{
       display:none;
-      padding:0 10px 10px;
-      border-top:1px solid var(--line);
+      grid-column:1 / -1;
+      width:100%;
+      margin-top:8px;
+      padding:10px;
+      border:1px solid var(--line);
+      border-radius:10px;
       background:#fff;
     }
 
@@ -1047,6 +1096,12 @@
       color:var(--muted);
     }
 
+    .btn:disabled{
+      opacity:.42;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+
     .toast{
       position:fixed;
       right:20px;
@@ -1137,6 +1192,27 @@
     }
 
     @media(max-width:760px){
+      .record{
+        grid-template-columns:1fr;
+        gap:9px;
+      }
+
+      .record-actions{
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        width:100%;
+        min-width:0;
+      }
+
+      .record-actions .btn-small,
+      .record-actions .btn-icon{
+        width:100%;
+        min-width:0;
+      }
+
+      .saved-tools{
+        grid-template-columns:minmax(0, 1fr) 42px;
+      }
+
       .lower-layout-grid{
         position:static;
         grid-template-columns:1fr;
@@ -1525,12 +1601,16 @@
               <input class="search" id="searchInput" type="search" placeholder="Buscar en todos los campos">
             </div>
             <div class="filters-panel" id="filtersPanel">
-            <button type="button" class="filters-accordion-btn" id="filtersAccordionBtn" aria-expanded="false">
-              <span class="filters-accordion-left">
-                <span>Filtros de búsqueda</span>
-                <span class="filters-accordion-meta" id="filtersAccordionMeta">Sin filtros activos</span>
-              </span>
-              <span class="filters-accordion-arrow" aria-hidden="true"></span>
+            <button
+              type="button"
+              class="filters-accordion-btn"
+              id="filtersAccordionBtn"
+              aria-expanded="false"
+              aria-label="Abrir filtros"
+              title="Filtros"
+            >
+              <span class="filter-funnel" aria-hidden="true"></span>
+              <span class="filters-accordion-meta" id="filtersAccordionMeta">Sin filtros activos</span>
             </button>
 
             <div class="filters-content">
@@ -1667,6 +1747,7 @@
   const filtersPanel = $("#filtersPanel");
   const filtersAccordionBtn = $("#filtersAccordionBtn");
   const filtersAccordionMeta = $("#filtersAccordionMeta");
+  let editingRecordId = "";
   let records = [];
   let firestoreReady = false;
   let selectedCorrections = [];
@@ -2040,9 +2121,11 @@
   function resetForm() {
     form.reset();
     fields.id.value = "";
+    editingRecordId = "";
     selectedCorrections = [];
     renderCorrections();
     setToday();
+    updateDeleteCurrentState();
   }
 
   function recordFromForm() {
@@ -2150,23 +2233,22 @@
     list.innerHTML = filtered.map(r => {
       const corrections = normalizeCorrections(r.corrections);
       const correctionText = corrections.length
-        ? corrections.map(item => `${item.name} (${item.foot === "Izquierdo" ? "Izq." : "Der."})`).join(", ")
+        ? corrections
+            .map(item => `${item.name} (${item.foot === "Izquierdo" ? "Izq." : "Der."})`)
+            .join(" · ")
         : "Sin correcciones";
 
       return `
         <article class="record">
-          <div>
+          <div class="record-summary">
             <div class="record-title">${escapeHTML(r.patient || "Sin nombre")}</div>
-            <div class="record-meta">
-              ${formatDate(r.date)}
-              ${r.dni ? ` · DNI ${escapeHTML(r.dni)}` : ""}
-              ${r.number ? ` · Orden ${escapeHTML(r.number)}` : ""}
-            </div>
-          </div>
 
-          <div class="record-meta">
-            <div>${escapeHTML(correctionText)}</div>
-            ${r.observations ? `<div class="record-detail-short">${escapeHTML(r.observations)}</div>` : ""}
+            <div class="record-primary-meta">
+              <span><strong>DNI</strong> ${escapeHTML(r.dni || "—")}</span>
+              <span><strong>Fecha</strong> ${escapeHTML(formatDate(r.date) || "—")}</span>
+            </div>
+
+            <div class="record-corrections">${escapeHTML(correctionText)}</div>
           </div>
 
           <div class="record-actions">
@@ -2184,6 +2266,18 @@
         </article>
       `;
     }).join("");
+  }
+
+  function updateDeleteCurrentState() {
+    const deleteButton = $("#deleteCurrentBtn");
+    if (!deleteButton) return;
+
+    const blocked = Boolean(editingRecordId);
+    deleteButton.disabled = blocked;
+    deleteButton.setAttribute("aria-disabled", blocked ? "true" : "false");
+    deleteButton.title = blocked
+      ? "Guardá nuevamente la ficha antes de eliminarla"
+      : "Borrar ficha actual";
   }
 
   function editRecord(id) {
@@ -2204,6 +2298,8 @@
     renderCorrections();
 
     showDate(r.date);
+    editingRecordId = r.id;
+    updateDeleteCurrentState();
 
     switchView("formView");
     window.scrollTo({top:0, behavior:"smooth"});
@@ -2485,6 +2581,11 @@
 
 
   async function deleteSavedRecord(id) {
+    if (editingRecordId === id) {
+      showToast("Guardá nuevamente la ficha antes de poder eliminarla.", true);
+      return;
+    }
+
     const record = records.find(item => item.id === id);
 
     if (!record) {
@@ -2621,6 +2722,11 @@
   });
 
   $("#deleteCurrentBtn").addEventListener("click", async () => {
+    if (editingRecordId) {
+      showToast("Guardá nuevamente la ficha antes de poder eliminarla.", true);
+      return;
+    }
+
     const currentId = fields.id.value;
 
     if (currentId) {
@@ -2681,8 +2787,8 @@
     tab.addEventListener("click", () => switchView(tab.dataset.view));
   });
 
-  filtersPanel.classList.add("open");
-  filtersAccordionBtn.setAttribute("aria-expanded", "true");
+  filtersPanel.classList.remove("open");
+  filtersAccordionBtn.setAttribute("aria-expanded", "false");
 
   resetForm();
   renderRecords();
