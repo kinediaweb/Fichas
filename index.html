@@ -33,7 +33,7 @@
     .app{
       min-height:100vh;
       display:grid;
-      grid-template-columns:minmax(760px, 920px);
+      grid-template-columns:minmax(0, 210mm);
       gap:18px;
       align-items:start;
       justify-content:center;
@@ -43,13 +43,16 @@
 
     .sheet{
       position:relative;
-      width:100%;
-      min-height:1060px;
+      width:210mm;
+      max-width:100%;
+      min-height:297mm;
+      aspect-ratio:210 / 297;
+      margin:0 auto;
       background:var(--paper);
       border:1.5px solid #111;
-      border-radius:18px;
+      border-radius:0;
       box-shadow:var(--shadow);
-      padding:34px 56px 92px;
+      padding:10mm 10mm 12mm;
       overflow:hidden;
     }
 
@@ -165,19 +168,24 @@
     }
 
     .field-list{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows:repeat(3, auto);
+      grid-auto-flow:row;
+      column-gap:12px;
+      row-gap:3px;
+      width:100%;
     }
 
     .field-row{
       display:grid;
-      grid-template-columns:155px 1fr;
+      grid-template-columns:132px minmax(0, 1fr);
       align-items:center;
-      gap:8px;
-      padding:7px 10px;
+      gap:6px;
+      min-width:0;
+      padding:6px 5px;
       border:1px solid transparent;
-      border-radius:10px;
+      border-radius:9px;
       transition:.18s ease;
     }
 
@@ -190,11 +198,17 @@
       border-color:var(--line);
     }
 
+    .field-list .field-row:first-child{
+      grid-template-columns:132px minmax(145px, 1fr);
+    }
+
     .field-label{
-      font-size:14px;
+      min-width:0;
+      font-size:13px;
       font-weight:650;
-      letter-spacing:.01em;
+      letter-spacing:.005em;
       color:#30363a;
+      white-space:nowrap;
     }
 
     .field-input,
@@ -205,7 +219,8 @@
       background:transparent;
       color:var(--ink);
       padding:0;
-      font-size:15px;
+      min-width:0;
+      font-size:14px;
       text-align:left;
     }
 
@@ -282,30 +297,60 @@
       opacity:1;
     }
 
-    .corrections-block{
+    .corrections-detail-grid{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+      align-items:start;
+      gap:18px;
       margin-top:16px;
-      margin-bottom:8px;
+      margin-bottom:10px;
+    }
+
+    .corrections-block,
+    .detail-block{
+      min-width:0;
+      margin:0;
       padding:0;
-      border-radius:12px;
       background:#fff;
     }
 
-    .corrections-row{
-      display:grid;
-      grid-template-columns:155px 1fr;
-      align-items:start;
-      gap:8px;
-      padding:7px 10px;
-      border:1px solid transparent;
-      border-radius:10px;
-    }
-
     .corrections-label{
+      margin:0 0 8px;
+      padding:0;
       font-size:14px;
       font-weight:650;
       letter-spacing:.01em;
       color:#30363a;
-      padding-top:10px;
+    }
+
+    .detail-field-row{
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      gap:8px;
+      padding:0;
+      border:0;
+      border-radius:0;
+    }
+
+    .detail-field-row:hover,
+    .detail-field-row:focus-within{
+      background:#fff;
+      border-color:transparent;
+    }
+
+    .detail-textarea{
+      min-height:132px;
+      padding:10px 11px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      resize:vertical;
+    }
+
+    .detail-textarea:focus{
+      border-color:#bfc6ca;
+      background:#fff;
     }
 
     .multi-select{
@@ -461,21 +506,34 @@
 
     .selected-corrections{
       display:flex;
-      flex-wrap:wrap;
-      gap:7px;
-      margin-top:8px;
+      flex-direction:column;
+      align-items:stretch;
+      gap:4px;
+      margin-top:10px;
     }
 
     .selected-correction{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      padding:6px 8px 6px 10px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      background:var(--soft);
-      font-size:12px;
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) auto;
+      align-items:start;
+      gap:8px;
+      min-height:24px;
+      padding:2px 0;
+      border:0;
+      border-radius:0;
+      background:transparent;
       color:#34393d;
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .selected-correction-text{
+      min-width:0;
+      overflow-wrap:anywhere;
+    }
+
+    .selected-correction-text::before{
+      content:"- ";
     }
 
     .correction-foot{
@@ -484,8 +542,8 @@
     }
 
     .remove-correction{
-      width:18px;
-      height:18px;
+      width:20px;
+      height:20px;
       display:grid;
       place-items:center;
       border:0;
@@ -551,20 +609,25 @@
       gap:4px 10px;
     }
 
-    .sheet-actions{
-      position:absolute;
-      left:40px;
-      bottom:20px;
+    .form-actions-bar{
+      width:210mm;
+      max-width:100%;
+      margin:12px auto 0;
       display:flex;
       align-items:center;
-      gap:8px;
-      margin:0;
+      justify-content:flex-end;
+      gap:7px;
+      padding:8px;
+      background:#fff;
+      border:1px solid #e3e3e3;
+      border-radius:12px;
+      box-shadow:0 5px 18px rgba(0,0,0,.045);
     }
 
     .date-corner{
       position:absolute;
-      right:40px;
-      bottom:24px;
+      right:10mm;
+      bottom:7mm;
       font-size:12px;
       color:var(--muted);
       letter-spacing:.04em;
@@ -853,6 +916,11 @@
     }
 
     @media(max-width:560px){
+      .field-row,
+      .field-list .field-row:first-child{
+        grid-template-columns:1fr;
+        gap:4px;
+      }
       .filters-grid{
         grid-template-columns:1fr;
       }
@@ -959,7 +1027,7 @@
       .app{
       min-height:100vh;
       display:grid;
-      grid-template-columns:minmax(720px, 900px);
+      grid-template-columns:minmax(0, 210mm);
       gap:18px;
       align-items:start;
       justify-content:center;
@@ -969,6 +1037,11 @@
     }
 
     @media(max-width:760px){
+      .corrections-detail-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+      }
+
       .app{padding:0 10px 10px}
       .sheet{
         padding:32px 20px 92px;
@@ -990,23 +1063,25 @@
       .annotation-text{
         font-size:13px;
       }
-      .field-row{
+      .field-list{
         grid-template-columns:1fr;
+        grid-template-rows:none;
+        column-gap:0;
+        row-gap:2px;
+      }
+
+      .field-row{
+        grid-template-columns:132px minmax(0, 1fr);
         gap:6px;
       }
       .bottom-grid{
         grid-template-columns:1fr;
       }
-      .corrections-row{
-        grid-template-columns:1fr;
-        gap:6px;
-      }
-      .corrections-label{
-        padding-top:0;
-      }
-      .sheet-actions{
-        left:20px;
-        bottom:18px;
+.form-actions-bar{
+        width:100%;
+        margin-top:9px;
+        justify-content:center;
+        flex-wrap:wrap;
         gap:6px;
       }
       .date-corner{
@@ -1028,50 +1103,99 @@
       }
     }
 
-    @media print{
-      body{background:#fff}
-      .app{
-      min-height:100vh;
-      display:grid;
-      grid-template-columns:minmax(720px, 900px);
-      gap:18px;
-      align-items:start;
-      justify-content:center;
-      padding:0 28px 28px;
-      background:#fff;
-    }
-      .sidebar,.sheet-actions,.view-switch{
-      position:absolute;
-      left:40px;
-      bottom:20px;
-      display:flex;
-      align-items:center;
-      gap:8px;
+    @page{
+      size:A4 portrait;
       margin:0;
     }
-      .sheet{
-        box-shadow:none;
-        border:1.2px solid #111;
-        border-radius:0;
+
+    @media print{
+      html,
+      body{
+        width:210mm;
+        height:297mm;
+        margin:0;
+        padding:0;
+        background:#fff;
+      }
+
+      .view-switch,
+      .form-actions-bar,
+      .sidebar,
+      #savedView{
+        display:none!important;
+      }
+
+      .app{
+        display:block;
         width:210mm;
         min-height:297mm;
-        padding:12mm 14mm 16mm;
+        margin:0;
+        padding:0;
+        background:#fff;
       }
-      .field-row,
+
+      .view-shell,
+      #formView{
+        display:block!important;
+        width:210mm;
+        margin:0;
+        padding:0;
+      }
+
+      .sheet{
+        box-sizing:border-box;
+        width:210mm;
+        height:297mm;
+        min-height:297mm;
+        max-height:297mm;
+        aspect-ratio:auto;
+        margin:0;
+        padding:10mm 10mm 11mm;
+        border:1.2px solid #111;
+        border-radius:0;
+        box-shadow:none;
+        overflow:hidden;
+      }
+
+      .field-list{
+        grid-template-columns:1fr 1fr;
+        grid-template-rows:repeat(3, auto);
+        column-gap:12px;
+        row-gap:2px;
+      }
+
+      .field-row{
+        grid-template-columns:35mm minmax(0, 1fr);
+        gap:1.5mm;
+        padding:1.3mm 1.5mm;
+        background:#fff!important;
+        border-color:transparent!important;
+      }
+
+      .corrections-detail-grid{
+        grid-template-columns:1fr 1fr;
+        gap:12px;
+      }
+
+      .remove-correction{
+        display:none!important;
+      }
+
       .foot-wrap{
         background:#fff!important;
         border-color:transparent!important;
       }
+
       .date-corner{
-      position:absolute;
-      right:40px;
-      bottom:24px;
-      font-size:12px;
-      color:var(--muted);
-      letter-spacing:.04em;
-      text-transform:none;
-      line-height:1;
-    }
+        position:absolute;
+        right:10mm;
+        bottom:6mm;
+        font-size:12px;
+        color:var(--muted);
+        letter-spacing:.04em;
+        text-transform:none;
+        line-height:1;
+      }
     }
   </style>
 </head>
@@ -1108,27 +1232,26 @@
       </div>
 
       <div class="field-row">
-        <label class="field-label" for="dni">DNI</label>
-        <input class="field-input" type="text" id="dni" placeholder="DNI">
-      </div>
-
-      <div class="field-row">
         <label class="field-label" for="last">Horma</label>
         <input class="field-input" type="text" id="last" placeholder="Horma">
       </div>
 
       <div class="field-row">
-        <label class="field-label" for="material">Material</label>
-        <input class="field-input" type="text" id="material" placeholder="Material">
+        <label class="field-label" for="dni">DNI</label>
+        <input class="field-input" type="text" id="dni" placeholder="DNI">
       </div>
 
       <div class="field-row">
         <label class="field-label" for="number">N.º de orden</label>
         <input class="field-input" type="text" id="number" placeholder="Número">
       </div>
+
+      <div class="field-row">
+        <label class="field-label" for="material">Material</label>
+        <input class="field-input" type="text" id="material" placeholder="Material">
+      </div>
     </div>
 
-    
     <div class="section-label">registro plantar</div>
 
     <div class="feet-image-wrap">
@@ -1142,11 +1265,11 @@
       </div>
     </div>
 
-<div class="corrections-block">
-      <div class="corrections-row">
+<div class="corrections-detail-grid">
+      <section class="corrections-block">
         <div class="corrections-label">Correcciones</div>
-        <div>
-          <div class="multi-select" id="correctionsSelect">
+
+        <div class="multi-select" id="correctionsSelect">
             <button type="button" class="multi-trigger" id="correctionsTrigger">
               <span class="multi-placeholder" id="correctionsPlaceholder">Buscar y seleccionar correcciones</span>
               <span class="multi-arrow"></span>
@@ -1198,17 +1321,20 @@
             </div>
           </div>
 
-          <div class="selected-corrections" id="selectedCorrections"></div>
-          <div class="corrections-print" id="correctionsPrint">Sin correcciones seleccionadas</div>
+        <div class="selected-corrections" id="selectedCorrections"></div>
+        <div class="corrections-print" id="correctionsPrint">Sin correcciones seleccionadas</div>
+      </section>
+
+      <section class="detail-block">
+        <div class="field-row detail-field-row">
+          <label class="field-label" for="observations">Detalle</label>
+          <textarea
+            class="field-textarea detail-textarea"
+            id="observations"
+            placeholder="Escribir detalle"
+          ></textarea>
         </div>
-      </div>
-    </div>
-
-    <div class="section-label">Detalle</div>
-
-    <div class="field-row" style="align-items:start">
-      <label class="field-label" for="observations">Detalle</label>
-      <textarea class="field-textarea" id="observations" placeholder="Observaciones"></textarea>
+      </section>
     </div>
 
     <div class="bottom-grid">
@@ -1223,19 +1349,25 @@
       </div>
     </div>
 
-    <div class="sheet-actions">
-      <button class="btn btn-dark" type="submit">Guardar ficha</button>
-      <button class="btn btn-light" type="button" id="pdfBtn">Exportar PDF</button>
-      <button class="btn btn-light" type="button" id="printBtn">Imprimir</button>
-      <button class="btn btn-icon btn-danger-soft" type="button" id="deleteCurrentBtn" aria-label="Borrar ficha actual" title="Borrar ficha actual">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 10.2A2 2 0 0 1 14.2 21H9.8a2 2 0 0 1-2-1.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/>
-        </svg>
-      </button>
-    </div>
-
     <div class="date-corner" id="dateCorner"></div>
   </form>
+
+  <div class="form-actions-bar" aria-label="Acciones de la ficha">
+    <button class="btn btn-dark" type="submit" form="recordForm" id="saveRecordBtn">Guardar ficha</button>
+    <button class="btn btn-light" type="button" id="pdfBtn">Exportar PDF</button>
+    <button class="btn btn-light" type="button" id="printBtn">Imprimir</button>
+    <button
+      class="btn btn-icon btn-danger-soft"
+      type="button"
+      id="deleteCurrentBtn"
+      aria-label="Borrar ficha actual"
+      title="Borrar ficha actual"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 10.2A2 2 0 0 1 14.2 21H9.8a2 2 0 0 1-2-1.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/>
+      </svg>
+    </button>
+  </div>
   </div>
 
   <div class="view-shell view-panel" id="savedView">
@@ -1645,22 +1777,25 @@
       : "Buscar y seleccionar correcciones";
 
     selectedCorrectionsEl.innerHTML = selectedCorrections.map((item, index) => `
-      <span class="selected-correction">
-        <span>${escapeHTML(item.name)}</span>
-        <span class="correction-foot">${item.foot === "Izquierdo" ? "Izq." : "Der."}</span>
+      <div class="selected-correction">
+        <span class="selected-correction-text">
+          ${escapeHTML(item.name)}
+          <span class="correction-foot">(${item.foot === "Izquierdo" ? "Izq." : "Der."})</span>
+        </span>
         <button
           type="button"
           class="remove-correction"
           data-remove-correction-index="${index}"
           aria-label="Quitar ${escapeHTML(item.name)}"
+          title="Quitar corrección"
         >×</button>
-      </span>
+      </div>
     `).join("");
 
-    correctionsPrint.textContent = selectedCorrections.length
+    correctionsPrint.innerHTML = selectedCorrections.length
       ? selectedCorrections.map(item =>
-          `${item.name} (${item.foot === "Izquierdo" ? "Izq." : "Der."})`
-        ).join(" · ")
+          `- ${escapeHTML(item.name)} (${item.foot === "Izquierdo" ? "Izq." : "Der."})`
+        ).join("<br>")
       : "Sin correcciones seleccionadas";
 
     renderFootAnnotations();
@@ -1933,7 +2068,7 @@
 
     const record = recordFromForm();
     const alreadyExists = records.some(item => item.id === record.id);
-    const submitButton = form.querySelector('button[type="submit"]');
+    const submitButton = $("#saveRecordBtn");
 
     submitButton.disabled = true;
     submitButton.textContent = alreadyExists ? "Actualizando..." : "Guardando...";
