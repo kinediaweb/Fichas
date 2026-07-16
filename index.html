@@ -1404,9 +1404,285 @@
         line-height:1;
       }
     }
+  
+    body.auth-locked{
+      overflow:hidden;
+    }
+
+    body.auth-locked .app{
+      visibility:hidden;
+      pointer-events:none;
+      user-select:none;
+    }
+
+    .auth-screen{
+      position:fixed;
+      inset:0;
+      z-index:1000;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:#f5f5f3;
+    }
+
+    .auth-screen.hidden{
+      display:none;
+    }
+
+    .auth-card{
+      width:min(100%, 390px);
+      padding:28px;
+      border:1px solid #dededb;
+      border-radius:18px;
+      background:#fff;
+      box-shadow:0 18px 50px rgba(0,0,0,.07);
+    }
+
+    .auth-brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:22px;
+    }
+
+    .auth-brand-logo{
+      width:46px;
+      height:46px;
+      flex:0 0 auto;
+      object-fit:contain;
+      border-radius:50%;
+      background:#fff;
+    }
+
+    .auth-brand-copy{
+      min-width:0;
+    }
+
+    .auth-brand-copy-only{
+      margin-bottom:18px;
+      text-align:center;
+    }
+
+    .auth-title{
+      margin:0;
+      font-size:21px;
+      font-weight:750;
+      letter-spacing:-.02em;
+      color:#17191a;
+    }
+
+    .auth-subtitle{
+      margin:4px 0 0;
+      color:#7a8084;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .auth-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:4px;
+      padding:4px;
+      margin-bottom:18px;
+      border-radius:11px;
+      background:#f1f2f2;
+    }
+
+    .auth-tab{
+      min-height:36px;
+      border:0;
+      border-radius:8px;
+      background:transparent;
+      color:#676d71;
+      font:inherit;
+      font-size:13px;
+      font-weight:650;
+      cursor:pointer;
+    }
+
+    .auth-tab.active{
+      background:#fff;
+      color:#17191a;
+      box-shadow:0 1px 5px rgba(0,0,0,.06);
+    }
+
+    .auth-form{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .auth-field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .auth-field label{
+      color:#3c4144;
+      font-size:12px;
+      font-weight:650;
+    }
+
+    .auth-input{
+      width:100%;
+      height:42px;
+      border:1px solid #d8dbdc;
+      border-radius:10px;
+      padding:0 11px;
+      outline:none;
+      background:#fff;
+      color:#17191a;
+      font:inherit;
+      font-size:14px;
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .auth-input:focus{
+      border-color:#aeb4b7;
+      box-shadow:0 0 0 3px rgba(0,0,0,.035);
+    }
+
+    .auth-submit{
+      min-height:42px;
+      margin-top:3px;
+      border:0;
+      border-radius:10px;
+      background:#181a1b;
+      color:#fff;
+      font:inherit;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .auth-submit:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .auth-message{
+      min-height:18px;
+      margin:0;
+      color:#bd3b3b;
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .account-bar{
+      position:fixed;
+      top:10px;
+      right:14px;
+      z-index:80;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      max-width:min(420px, calc(100vw - 28px));
+      padding:6px 7px 6px 11px;
+      border:1px solid #e1e2e2;
+      border-radius:999px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 4px 16px rgba(0,0,0,.045);
+      backdrop-filter:blur(10px);
+    }
+
+    .account-email{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:#555b5f;
+      font-size:11px;
+    }
+
+    .logout-btn{
+      flex:0 0 auto;
+      min-height:28px;
+      border:0;
+      border-radius:999px;
+      padding:0 10px;
+      background:#f0f1f1;
+      color:#26292b;
+      font:inherit;
+      font-size:11px;
+      font-weight:650;
+      cursor:pointer;
+    }
+
+    .logout-btn:hover{
+      background:#e5e7e7;
+    }
+
+    @media(max-width:560px){
+      .auth-screen{
+        padding:14px;
+      }
+
+      .auth-card{
+        padding:22px;
+        border-radius:15px;
+      }
+
+      .account-bar{
+        top:auto;
+        right:10px;
+        bottom:10px;
+      }
+    }
+
   </style>
 </head>
-<body>
+<body class="auth-locked">
+
+<div class="auth-screen" id="authScreen">
+  <section class="auth-card" aria-labelledby="authTitle">
+    <div class="auth-brand-copy auth-brand-copy-only">
+      <p class="auth-subtitle" id="authSubtitle">Ingresá para consultar y administrar tus fichas.</p>
+    </div>
+
+    <div class="auth-tabs" role="tablist" aria-label="Modo de acceso">
+      <button type="button" class="auth-tab active" id="loginModeBtn" data-auth-mode="login">Iniciar sesión</button>
+      <button type="button" class="auth-tab" id="registerModeBtn" data-auth-mode="register">Registrarse</button>
+    </div>
+
+    <form class="auth-form" id="authForm" novalidate>
+      <div class="auth-field">
+        <label for="authEmail">Correo electrónico</label>
+        <input
+          class="auth-input"
+          id="authEmail"
+          type="email"
+          autocomplete="email"
+          placeholder="nombre@correo.com"
+          required
+        >
+      </div>
+
+      <div class="auth-field">
+        <label for="authPassword">Contraseña</label>
+        <input
+          class="auth-input"
+          id="authPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder=""
+          minlength="6"
+          required
+        >
+      </div>
+
+      <p class="auth-message" id="authMessage" role="alert"></p>
+
+      <button class="auth-submit" id="authSubmitBtn" type="submit">Ingresar</button>
+    </form>
+  </section>
+</div>
+
+<div class="account-bar" id="accountBar" hidden>
+  <span class="account-email" id="accountEmail"></span>
+  <button class="logout-btn" id="logoutBtn" type="button">Cerrar sesión</button>
+</div>
+
 <div class="app">
   <div class="view-switch">
     <div class="switch-inner">
@@ -1717,6 +1993,14 @@
     onSnapshot
   } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
+  import {
+    getAuth,
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyBHHAC7x3CzbLmsgQoDleYYncBYmnncXSo",
     authDomain: "kinedia-d51bf.firebaseapp.com",
@@ -1728,10 +2012,145 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const recordsCollection = collection(db, "fichas");
+  const auth = getAuth(app);
   const LEGACY_STORAGE_KEY = "kinedia_work_orders_v3";
 
+  let currentUser = null;
+  let unsubscribeRecords = null;
+
+  function getUserRecordsCollection() {
+    if (!currentUser) {
+      throw new Error("No hay una sesión iniciada.");
+    }
+
+    return collection(db, "users", currentUser.uid, "fichas");
+  }
+
+  function getUserRecordDocument(recordId) {
+    if (!currentUser) {
+      throw new Error("No hay una sesión iniciada.");
+    }
+
+    return doc(db, "users", currentUser.uid, "fichas", recordId);
+  }
+
   const $ = s => document.querySelector(s);
+
+  const authScreen = $("#authScreen");
+  const accountBar = $("#accountBar");
+  const accountEmail = $("#accountEmail");
+  const authForm = $("#authForm");
+  const authEmail = $("#authEmail");
+  const authPassword = $("#authPassword");
+  const authMessage = $("#authMessage");
+  const authSubmitBtn = $("#authSubmitBtn");
+  const authSubtitle = $("#authSubtitle");
+  const logoutBtn = $("#logoutBtn");
+
+  let authMode = "login";
+
+  function getFriendlyAuthError(error) {
+    const code = String(error?.code || "");
+
+    const messages = {
+      "auth/email-already-in-use": "Ese correo ya está registrado.",
+      "auth/invalid-email": "El correo electrónico no es válido.",
+      "auth/invalid-credential": "Correo o contraseña incorrectos.",
+      "auth/user-disabled": "Esta cuenta fue deshabilitada.",
+      "auth/user-not-found": "No existe una cuenta con ese correo.",
+      "auth/wrong-password": "La contraseña es incorrecta.",
+      "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
+      "auth/too-many-requests": "Demasiados intentos. Probá nuevamente más tarde.",
+      "auth/network-request-failed": "No se pudo conectar. Revisá tu conexión."
+    };
+
+    return messages[code] || "No se pudo completar el acceso.";
+  }
+
+  function setAuthMode(mode) {
+    authMode = mode === "register" ? "register" : "login";
+    const registering = authMode === "register";
+
+    document.querySelectorAll("[data-auth-mode]").forEach(button => {
+      button.classList.toggle("active", button.dataset.authMode === authMode);
+    });
+
+    authPassword.autocomplete = registering ? "new-password" : "current-password";
+    authSubmitBtn.textContent = registering ? "Crear cuenta" : "Ingresar";
+    authSubtitle.textContent = registering
+      ? "Creá una cuenta para guardar tus fichas de forma privada."
+      : "Ingresá para consultar y administrar tus fichas.";
+    authMessage.textContent = "";
+  }
+
+  function setApplicationAccess(user) {
+    const authenticated = Boolean(user);
+
+    document.body.classList.toggle("auth-locked", !authenticated);
+    authScreen.classList.toggle("hidden", authenticated);
+    accountBar.hidden = !authenticated;
+    accountEmail.textContent = user?.email || "";
+
+    if (authenticated) {
+      authForm.reset();
+      setAuthMode("login");
+    }
+  }
+
+  document.querySelectorAll("[data-auth-mode]").forEach(button => {
+    button.addEventListener("click", () => setAuthMode(button.dataset.authMode));
+  });
+
+  authForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+
+    authMessage.textContent = "";
+
+    if (!email || !password) {
+      authMessage.textContent = "Completá el correo y la contraseña.";
+      return;
+    }
+
+
+    authSubmitBtn.disabled = true;
+    authSubmitBtn.textContent = authMode === "register"
+      ? "Creando cuenta..."
+      : "Ingresando...";
+
+    try {
+      if (authMode === "register") {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+    } catch (error) {
+      console.error("Error de autenticación:", error);
+      authMessage.textContent = getFriendlyAuthError(error);
+    } finally {
+      authSubmitBtn.disabled = false;
+      authSubmitBtn.textContent = authMode === "register"
+        ? "Crear cuenta"
+        : "Ingresar";
+    }
+  });
+
+  logoutBtn.addEventListener("click", async () => {
+    logoutBtn.disabled = true;
+
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      showToast("No se pudo cerrar la sesión", true);
+    } finally {
+      logoutBtn.disabled = false;
+    }
+  });
+
+
   const form = $("#recordForm");
   const list = $("#recordList");
   const search = $("#searchInput");
@@ -1786,15 +2205,25 @@
   }
 
   async function saveRecordToFirestore(record) {
-    await setDoc(doc(db, "fichas", record.id), record);
+    if (!currentUser) {
+      throw new Error("La sesión no está disponible.");
+    }
+
+    await setDoc(getUserRecordDocument(record.id), {
+      ...record,
+      ownerId: currentUser.uid,
+      ownerEmail: currentUser.email || ""
+    });
   }
 
   async function deleteRecordFromFirestore(id) {
-    await deleteDoc(doc(db, "fichas", id));
+    await deleteDoc(getUserRecordDocument(id));
   }
 
   async function migrateLegacyRecords() {
-    const migrationKey = `${LEGACY_STORAGE_KEY}_migrated_to_firestore`;
+    if (!currentUser) return;
+
+    const migrationKey = `${LEGACY_STORAGE_KEY}_migrated_to_firestore_${currentUser.uid}`;
 
     if (localStorage.getItem(migrationKey) === "true") return;
 
@@ -1815,8 +2244,10 @@
       legacyRecords
         .filter(record => record && record.id)
         .map(record =>
-          setDoc(doc(db, "fichas", record.id), {
+          setDoc(getUserRecordDocument(record.id), {
             ...record,
+            ownerId: currentUser.uid,
+            ownerEmail: currentUser.email || "",
             updatedAt: record.updatedAt || new Date().toISOString()
           })
         )
@@ -1827,8 +2258,15 @@
   }
 
   function listenToFirestore() {
-    return onSnapshot(
-      recordsCollection,
+    if (!currentUser) return () => {};
+
+    if (typeof unsubscribeRecords === "function") {
+      unsubscribeRecords();
+      unsubscribeRecords = null;
+    }
+
+    unsubscribeRecords = onSnapshot(
+      getUserRecordsCollection(),
       snapshot => {
         records = snapshot.docs.map(snapshotDoc => ({
           id: snapshotDoc.id,
@@ -1845,6 +2283,8 @@
         renderRecords();
       }
     );
+
+    return unsubscribeRecords;
   }
 
   function showToast(message, danger=false) {
@@ -2142,6 +2582,8 @@
       corrections: [...selectedCorrections],
       orderedBy: fields.orderedBy.value.trim(),
       madeBy: fields.madeBy.value.trim(),
+      ownerId: currentUser?.uid || "",
+      ownerEmail: currentUser?.email || "",
       updatedAt: new Date().toISOString()
     };
   }
@@ -2827,11 +3269,30 @@
 
   resetForm();
   renderRecords();
-  listenToFirestore();
+  setApplicationAccess(null);
 
-  migrateLegacyRecords().catch(error => {
-    console.error("Error al migrar las fichas anteriores:", error);
-    showToast("No se pudieron migrar algunas fichas anteriores", true);
+  onAuthStateChanged(auth, user => {
+    if (typeof unsubscribeRecords === "function") {
+      unsubscribeRecords();
+      unsubscribeRecords = null;
+    }
+
+    currentUser = user || null;
+    records = [];
+    firestoreReady = false;
+    editingRecordId = "";
+    resetForm();
+    renderRecords();
+    setApplicationAccess(currentUser);
+
+    if (!currentUser) return;
+
+    listenToFirestore();
+
+    migrateLegacyRecords().catch(error => {
+      console.error("Error al migrar las fichas anteriores:", error);
+      showToast("No se pudieron migrar algunas fichas anteriores", true);
+    });
   });
 </script>
 </body>
