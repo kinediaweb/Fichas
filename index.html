@@ -248,11 +248,16 @@
 
     
     .feet-image-wrap{
+      position:absolute;
+      left:14mm;
+      right:14mm;
+      top:50%;
+      transform:translateY(-50%);
       display:flex;
       justify-content:center;
       align-items:center;
-      width:100%;
-      margin:4px 0 14px;
+      width:auto;
+      margin:0;
       background:#fff;
     }
 
@@ -297,13 +302,29 @@
       opacity:1;
     }
 
-    .corrections-detail-grid{
+    .lower-layout-grid{
+      position:absolute;
+      left:14mm;
+      right:14mm;
+      bottom:10mm;
       display:grid;
       grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
       align-items:start;
       gap:18px;
-      margin-top:16px;
-      margin-bottom:10px;
+      margin:0;
+    }
+
+    .lower-left-column,
+    .lower-right-column{
+      min-width:0;
+    }
+
+    .lower-right-column .corrections-block{
+      margin:0;
+    }
+
+    .lower-left-column .detail-block{
+      margin:0;
     }
 
     .corrections-block,
@@ -568,7 +589,6 @@
       color:#222;
     }
 
-
     .multi-menu.choosing-foot .correction-search,
     .multi-menu.choosing-foot .correction-options{
       display:none;
@@ -603,10 +623,33 @@
     }
 
     .bottom-grid{
-      margin-top:22px;
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .made-date-row{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:4px 10px;
+      grid-template-columns:minmax(0, 1fr) auto;
+      align-items:center;
+      gap:10px;
+    }
+
+    .made-date-row .field-row{
+      min-width:0;
+    }
+
+    .date-corner{
+      position:static;
+      display:block;
+      width:max-content;
+      margin:6px 0 0;
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.04em;
+      text-transform:none;
+      line-height:1;
     }
 
     .form-actions-bar{
@@ -625,9 +668,10 @@
     }
 
     .date-corner{
-      position:absolute;
-      right:10mm;
-      bottom:7mm;
+      position:static;
+      justify-self:end;
+      align-self:center;
+      white-space:nowrap;
       font-size:12px;
       color:var(--muted);
       letter-spacing:.04em;
@@ -1054,9 +1098,19 @@
       padding:6px 5px!important;
     }
 
-    .sheet.capture-mode .corrections-detail-grid{
+    .sheet.capture-mode .lower-layout-grid{
+      position:absolute!important;
+      left:14mm!important;
+      right:14mm!important;
+      bottom:10mm!important;
       grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
       gap:18px!important;
+      margin:0!important;
+    }
+
+    .sheet.capture-mode .made-date-row{
+      grid-template-columns:minmax(0,1fr) auto!important;
+      gap:10px!important;
     }
 
     .sheet.capture-mode .remove-correction,
@@ -1083,9 +1137,28 @@
     }
 
     @media(max-width:760px){
-      .corrections-detail-grid{
+      .lower-layout-grid{
+        position:static;
         grid-template-columns:1fr;
         gap:14px;
+        margin-top:14px;
+      }
+
+      .made-date-row{
+        grid-template-columns:1fr;
+        gap:6px;
+      }
+
+      .date-corner{
+        position:static;
+        display:block;
+        width:max-content;
+        margin:6px 0 0;
+        font-size:12px;
+        color:var(--muted);
+        letter-spacing:.04em;
+        text-transform:none;
+        line-height:1;
       }
 
       .app{padding:0 10px 10px}
@@ -1218,9 +1291,23 @@
         border-color:transparent!important;
       }
 
-      .corrections-detail-grid{
+      .lower-layout-grid{
+        position:absolute;
+        left:14mm;
+        right:14mm;
+        bottom:10mm;
         grid-template-columns:1fr 1fr;
         gap:12px;
+        margin:0;
+      }
+
+      .made-date-row{
+        grid-template-columns:minmax(0,1fr) auto;
+        gap:8px;
+      }
+
+      .date-corner{
+        position:static;
       }
 
       .remove-correction{
@@ -1233,9 +1320,7 @@
       }
 
       .date-corner{
-        position:absolute;
-        right:10mm;
-        bottom:6mm;
+        position:static;
         font-size:12px;
         color:var(--muted);
         letter-spacing:.04em;
@@ -1299,6 +1384,7 @@
     </div>
 
     <div class="section-label">registro plantar</div>
+    <div class="date-corner" id="dateCorner"></div>
 
     <div class="feet-image-wrap">
       <div class="feet-diagram">
@@ -1311,8 +1397,38 @@
       </div>
     </div>
 
-<div class="corrections-detail-grid">
-      <section class="corrections-block">
+<div class="lower-layout-grid">
+      <div class="lower-left-column">
+        <section class="detail-block">
+        <div class="field-row detail-field-row">
+          <label class="field-label" for="observations">Detalle</label>
+          <textarea
+            class="field-textarea detail-textarea"
+            id="observations"
+            placeholder="Escribir detalle"
+          ></textarea>
+        </div>
+      </section>
+
+        <div class="bottom-grid">
+          <div class="field-row">
+            <label class="field-label" for="orderedBy">Pedido por</label>
+            <input class="field-input" type="text" id="orderedBy" placeholder="Nombre">
+          </div>
+
+          <div class="made-date-row">
+            <div class="field-row">
+              <label class="field-label" for="madeBy">Confeccionado por</label>
+              <input class="field-input" type="text" id="madeBy" placeholder="Nombre">
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="lower-right-column">
+        <section class="corrections-block">
         <div class="corrections-label">Correcciones</div>
 
         <div class="multi-select" id="correctionsSelect">
@@ -1370,32 +1486,10 @@
         <div class="selected-corrections" id="selectedCorrections"></div>
         <div class="corrections-print" id="correctionsPrint">Sin correcciones seleccionadas</div>
       </section>
-
-      <section class="detail-block">
-        <div class="field-row detail-field-row">
-          <label class="field-label" for="observations">Detalle</label>
-          <textarea
-            class="field-textarea detail-textarea"
-            id="observations"
-            placeholder="Escribir detalle"
-          ></textarea>
-        </div>
-      </section>
-    </div>
-
-    <div class="bottom-grid">
-      <div class="field-row">
-        <label class="field-label" for="orderedBy">Pedido por</label>
-        <input class="field-input" type="text" id="orderedBy" placeholder="Nombre">
-      </div>
-
-      <div class="field-row">
-        <label class="field-label" for="madeBy">Confeccionado por</label>
-        <input class="field-input" type="text" id="madeBy" placeholder="Nombre">
       </div>
     </div>
 
-    <div class="date-corner" id="dateCorner"></div>
+    
   </form>
 
   <div class="form-actions-bar" aria-label="Acciones de la ficha">
